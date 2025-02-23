@@ -1,21 +1,6 @@
 import SwiftUI
 
 struct HomeView: View {
-    
-    let categories = [
-        ("Sleep", "leaf.fill", Color.green, 4),
-        ("Movement", "drop.fill", Color.blue, 3),
-        ("Social", "drop.fill", Color.yellow, 3),
-        ("Personal", "drop.fill", Color.red, 3),
-        ("Downtime", "drop.fill", Color.pink, 3),
-        ("Study", "drop.fill", Color.purple, 3),
-        ("Work", "drop.fill", Color.brown, 3)
-    ]
-    
-    
-}
-
-struct HomeView: View {
     var body: some View {
         VStack {
             

@@ -11,7 +11,25 @@ import SwiftUI
 struct HomeViewApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Image(systemName: "leaf")
+                        Text("Home")
+                    }
+                
+                StatsView()
+                    .tabItem {
+                        Image(systemName: "drop")
+                        Text("Logging")
+                    }
+                
+//                ProfileView()
+                    .tabItem {
+                        Image(systemName: "person.crop.circle")
+                        Text("Profile")
+                    }
+            }
         }
     }
 }
