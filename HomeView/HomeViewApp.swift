@@ -14,11 +14,11 @@ struct HomeViewApp: App {
             TabView {
                 HomeView()
                     .tabItem {
-                        Image(systemName: "leaf")
+                        Image(systemName: "tree")
                         Text("Home")
                     }
                 
-                StatsView()
+                HomeView()
                     .tabItem {
                         Image(systemName: "drop")
                         Text("Logging")
@@ -30,6 +30,7 @@ struct HomeViewApp: App {
                         Text("Profile")
                     }
             }
+            .tint(.green)
         }
     }
 }

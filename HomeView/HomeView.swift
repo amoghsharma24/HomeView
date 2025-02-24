@@ -1,89 +1,176 @@
+//
+//  ContentView.swift
+//  Fruitfull
+//
+//  Created by Yana Duran on 24/2/2025.
+//
+
 import SwiftUI
 
+struct ActivityCategory: Identifiable {
+    let id = UUID()
+    let name: String
+    let icon: String
+    let color: Color
+    let score: Int
+    let goalTime: Double
+    let loggedTime: Double
+}
+
 struct HomeView: View {
+    @State private var showAlert = false
+    @State private var selectedCategory: ActivityCategory?
     
     let categories = [
-        ("Sleep", "leaf.fill", Color.green, 4),
-        ("Movement", "drop.fill", Color.blue, 3),
-        ("Social", "drop.fill", Color.yellow, 3),
-        ("Personal", "drop.fill", Color.red, 3),
-        ("Downtime", "drop.fill", Color.pink, 3),
-        ("Study", "drop.fill", Color.purple, 3),
-        ("Work", "drop.fill", Color.brown, 3)
+        ActivityCategory(name: "Sleep", icon: "bed.double", color: .mint, score: 4, goalTime: 24, loggedTime: 19.2),
+        ActivityCategory(name: "Movement", icon: "figure.walk", color: .blue, score: 3, goalTime: 24, loggedTime: 19.2),
+        ActivityCategory(name: "Social", icon: "person.2", color: .yellow, score: 3, goalTime: 24, loggedTime: 19.2),
+        ActivityCategory(name: "Personal", icon: "leaf", color: .green, score: 3, goalTime: 24, loggedTime: 13.2),
+        ActivityCategory(name: "Downtime", icon: "clock", color: .orange, score: 3, goalTime: 24, loggedTime: 19.2),
+        ActivityCategory(name: "Study", icon: "book", color: .purple, score: 3, goalTime: 24, loggedTime: 19.2),
+        ActivityCategory(name: "Work", icon: "briefcase", color: .brown, score: 3, goalTime: 24, loggedTime: 19.2)
+    ]
+    
+    let phrases = [
+        "Well done, your week has been fruitful!", "Mid", "End"
     ]
     
     var body: some View {
-        VStack {
-            
-            Text("Fruitful")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top)
-            
-            Text("Well done, your week has been fruitful!")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            ScrollView{
-                Image(.image) // Placeholder for image
-                    .frame(width: 500)
-                    .cornerRadius(10)
-                    .padding()
-                
-                Spacer()
+        NavigationStack {
+            VStack(spacing: 16) {
+                headerView
+                ScrollView {
+                    mainContent
+                }
             }
-            
-        }
-        .padding()
-        
-        VStack {
-            ScrollView {
+            .padding()
+            .background(Color(.systemGroupedBackground))
+            .alert("Category Details", isPresented: $showAlert, presenting: selectedCategory) { category in
+                Button("Done", role: .cancel) { }
+            } message: { category in
                 VStack {
-                    ForEach(categories, id: \.self) { category in
-                        HStack{
-                            
-                            
-                            HStack {
-                                Text(category.0)
-                                    .font(.headline)
-                                    .frame(width: 200, alignment: .leading)
-                                
-                                HStack {
-                                    ForEach(0..<5) { index in
-                                        Image(systemName: index < category.3 ? "drop.fill" : "drop")
-                                            .foregroundColor(category.2)
-                                    }
-                                }
+                    Text("\(category.name)")
+                        .font(.headline)
+                    Text("Goal: \(category.goalTime.formatted()) hours")
+                    Text("Logged: \(category.loggedTime.formatted()) hours")
+                    Text("Score: \(category.score)/5")
+                }
+            }
+        }
+    }
+    
+    private var headerView: some View {
+        VStack(spacing: 8) {
+            Text("Fruitful")
+                .font(.system(size: 34, weight: .bold)
+                )
+                .fontWidth(.expanded)
+ 
             
-                                
-                            }
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .shadow(radius: 1)
-                            .padding(.bottom, 20)
-                            
-                            NavigationLink{
-                                Image(systemName: "info.circle")
-                                    .foregroundColor(.gray)
-                                    .padding(.bottom, 20)
-                            }
-                            
-                        }
+            Text("\(phrases[0])")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+    }
+    
+    private var mainContent: some View {
+        VStack(spacing: 20) {
+            Image(.fruitTree)
+                .resizable()
+                .scaledToFit()
+                .padding(.vertical)
+            
+            Text("Your Week's Summary")
+                .font(.title2.bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            ForEach(categories) { category in
+                categoryCard(category: category)
+            }
+            .frame(width: 370, height: 100)
+            .padding(.bottom, 1)
+        }
+        
+    }
+    
+    private func categoryCard(category: ActivityCategory) -> some View {
+        HStack(alignment: .top, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Image(systemName: category.icon)
+                        .symbolVariant(.fill)
+                        .foregroundColor(category.color)
+                        .font(.title3)
+                    
+                    Text(category.name)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    Button {
+                        selectedCategory = category
+                        showAlert = true
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.secondary)
                     }
                 }
-                .padding()
+                
+                ProgressView(value: category.loggedTime, total: category.goalTime)
+                    .progressViewStyle(CustomProgressStyle(color: category.color))
+                
+                HStack {
+                    Text("\(category.loggedTime.formatted(.number.precision(.fractionLength(1))))h logged")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Text("Goal: \(category.goalTime.formatted(.number.precision(.fractionLength(1))))h")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
             }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.background)
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+            )
         }
     }
+    
+    
+    struct CustomProgressStyle: ProgressViewStyle {
+        var color: Color
         
-    }
-
-struct ProfileView: View {
-    var body: some View {
-        Text("Profile Screen")
+        func makeBody(configuration: Configuration) -> some View {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .frame(height: 8)
+                        .foregroundColor(color.opacity(0.2))
+                    
+                    Capsule()
+                        .frame(width: geometry.size.width * CGFloat(configuration.fractionCompleted ?? 0),
+                               height: 8)
+                        .foregroundColor(color)
+                        .animation(.easeInOut, value: configuration.fractionCompleted)
+                }
+            }
+            .frame(height: 8)
+        }
     }
 }
+    struct ProfileView: View {
+        var body: some View {
+            Text("Profile Screen")
+        }
+    }
+    
+    #Preview {
+        HomeView()
+    }
 
-#Preview {
-    HomeView()
-}
