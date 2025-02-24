@@ -68,7 +68,7 @@ struct HomeView: View {
  
             
             Text("\(phrases[0])")
-                .font(.subheadline)
+                .font(.headline)
                 .foregroundColor(.secondary)
         }
     }
